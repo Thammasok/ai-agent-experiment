@@ -39,6 +39,203 @@ Shift-Left:
 
 ## Step-by-Step Testing Workflow
 
+### Step 0 — Define the System Under Test (SUT)
+
+Before any test design, document **what system you are testing**. This shapes which test levels apply, what can be mocked, where integration points are, and what environments exist.
+
+A SUT definition answers four questions:
+1. What are the components and how do they connect?
+2. What tech stack and versions are in use?
+3. What are the external dependencies and integration points?
+4. What environments exist and what is testable in each?
+
+---
+
+#### SUT Definition Template
+
+```
+System Name:    [e.g. "E-Commerce Platform", "Payment Gateway", "Auth Service"]
+Version:        [e.g. v2.3.1 or sprint/release context]
+Description:    [1–2 sentences — what the system does and who uses it]
+
+─────────────────────────────────────────────
+ARCHITECTURE
+─────────────────────────────────────────────
+Architecture Style:
+  [ ] Monolith          [ ] Microservices       [ ] Modular Monolith
+  [ ] Serverless        [ ] Event-Driven        [ ] BFF + Services
+
+Components:
+  Name              | Type            | Responsibility
+  ──────────────────|─────────────────|──────────────────────────────
+  [component-name]  | Frontend        | [e.g. Customer-facing web UI]
+  [component-name]  | Backend Service | [e.g. Handles order lifecycle]
+  [component-name]  | Background Job  | [e.g. Sends email notifications]
+  [component-name]  | Database        | [e.g. Stores user and order data]
+  [component-name]  | Message Queue   | [e.g. Order events pub/sub]
+  [component-name]  | Cache           | [e.g. Session and product cache]
+
+Communication:
+  [ ] REST API        [ ] GraphQL         [ ] gRPC
+  [ ] Message Queue   [ ] WebSocket       [ ] Event Bus
+  Protocol detail: [e.g. "Services communicate via REST; async events via RabbitMQ"]
+
+─────────────────────────────────────────────
+TECH STACK
+─────────────────────────────────────────────
+Frontend:
+  Framework:    [e.g. React 18, Next.js 14, Vue 3]
+  State:        [e.g. Zustand, Redux, React Query]
+  UI Library:   [e.g. Tailwind CSS, Material UI]
+  Build Tool:   [e.g. Vite, Webpack]
+
+Backend:
+  Language:     [e.g. Node.js 20, Python 3.12, Java 21]
+  Framework:    [e.g. Express 4, FastAPI, Spring Boot 3]
+  ORM / DB:     [e.g. Prisma + PostgreSQL 15, Mongoose + MongoDB 7]
+  Auth:         [e.g. JWT + Refresh Token, OAuth2, NextAuth.js]
+  Cache:        [e.g. Redis 7]
+  Queue:        [e.g. RabbitMQ, Kafka, BullMQ]
+
+Infrastructure:
+  Deployment:   [e.g. Docker + Kubernetes, Vercel + Railway, AWS ECS]
+  CI/CD:        [e.g. GitHub Actions, GitLab CI, Jenkins]
+  Monitoring:   [e.g. Datadog, Sentry, CloudWatch]
+
+─────────────────────────────────────────────
+EXTERNAL DEPENDENCIES & INTEGRATION POINTS
+─────────────────────────────────────────────
+  Name                | Type              | Test Approach
+  ────────────────────|───────────────────|──────────────────────────────
+  [e.g. Stripe]       | Payment Gateway   | Mock in unit/API; sandbox in E2E
+  [e.g. SendGrid]     | Email Service     | Mock in all automated tests
+  [e.g. Google OAuth] | Auth Provider     | Mock token; real login in E2E only
+  [e.g. AWS S3]       | File Storage      | Localstack in integration tests
+  [e.g. Twilio]       | SMS Gateway       | Mock always; manual check in staging
+
+─────────────────────────────────────────────
+DATA STORES
+─────────────────────────────────────────────
+  Name             | Type        | Owned By         | Shared?
+  ─────────────────|─────────────|──────────────────|────────
+  [e.g. user_db]   | PostgreSQL  | User Service     | No
+  [e.g. order_db]  | PostgreSQL  | Order Service    | No
+  [e.g. cache]     | Redis       | API Gateway      | Yes (read-only for others)
+
+Rule: Never share a database between services — even in tests.
+
+─────────────────────────────────────────────
+ENVIRONMENTS
+─────────────────────────────────────────────
+  Environment | Purpose                        | Test Types Allowed
+  ────────────|────────────────────────────────|─────────────────────────────────
+  local       | Developer machine              | Unit, Component, API
+  dev         | Shared dev integration         | Unit, Component, API, Integration
+  staging     | Pre-production mirror          | All types including E2E
+  production  | Live system                    | Smoke tests only (read-only)
+
+─────────────────────────────────────────────
+TEST SCOPE BOUNDARIES
+─────────────────────────────────────────────
+In scope:
+  - [List components, services, and flows covered by this test effort]
+
+Out of scope:
+  - [Third-party systems tested only via their own test suites]
+  - [Legacy components not under active development]
+  - [Infrastructure / DevOps concerns outside app layer]
+
+─────────────────────────────────────────────
+TEST LEVEL APPLICABILITY
+─────────────────────────────────────────────
+  Level               | Applicable? | Owner         | Run On
+  ────────────────────|─────────────|───────────────|─────────────────
+  Unit                | Yes         | Developer     | Every commit
+  Component (Backend) | Yes         | Developer     | Every commit
+  API                 | Yes         | Developer/QA  | Every PR
+  Contract            | Yes         | QA            | Every PR (shared APIs)
+  Integration         | Yes         | QA            | Merge to main
+  Frontend Component  | Yes         | Developer     | Every PR
+  E2E                 | Yes         | QA            | Merge to main / nightly
+```
+
+---
+
+#### Example SUT Definition: E-Commerce Platform
+
+```
+System Name:    E-Commerce Platform
+Version:        v3.1 (Sprint 24)
+Description:    B2C online store allowing customers to browse products,
+                manage carts, check out, and track orders. Operated by
+                internal merchants via an admin portal.
+
+ARCHITECTURE
+  Style: Microservices
+
+  Components:
+    storefront-web      | Frontend        | Customer-facing Next.js app
+    admin-web           | Frontend        | Merchant/admin portal (React)
+    user-service        | Backend Service | Registration, login, profiles
+    product-service     | Backend Service | Catalog, inventory, pricing
+    order-service       | Backend Service | Cart, checkout, order lifecycle
+    notification-worker | Background Job  | Email/SMS on order events
+    api-gateway         | Gateway         | Auth, routing, rate limiting
+    postgres-user       | Database        | User accounts and sessions
+    postgres-order      | Database        | Orders and order items
+    mongodb-product     | Database        | Product catalog (document model)
+    redis-cache         | Cache           | Sessions, product cache (TTL 10m)
+    rabbitmq            | Message Queue   | order.created, order.updated events
+
+  Communication: REST between services; async events via RabbitMQ
+
+TECH STACK
+  Frontend:  Next.js 14 (App Router), Tailwind CSS, React Query
+  Backend:   Node.js 20, Express 4, Prisma ORM, Mongoose
+  Auth:      JWT (15min) + Refresh Token (7d), stored in HttpOnly cookies
+  Cache:     Redis 7
+  Queue:     RabbitMQ 3.12
+
+EXTERNAL DEPENDENCIES
+  Stripe          | Payment Gateway | Mock in unit/API; Stripe test mode in E2E
+  SendGrid        | Email           | Mock always; inspect in staging manually
+  Google OAuth    | Social Login    | Mock token in API tests; real login in E2E
+  Cloudinary      | Image Storage   | Mock in unit; real account in staging
+
+DATA STORES
+  postgres-user   | PostgreSQL | user-service   | Not shared
+  postgres-order  | PostgreSQL | order-service  | Not shared
+  mongodb-product | MongoDB    | product-service| Not shared
+  redis-cache     | Redis      | api-gateway    | Read-only for other services
+
+ENVIRONMENTS
+  local    → Unit, Component, API tests (Docker Compose for DB)
+  dev      → Integration tests (all services deployed)
+  staging  → E2E, performance, security tests
+  prod     → Smoke tests only (health checks, no writes)
+
+TEST SCOPE BOUNDARIES
+  In scope:  user-service, product-service, order-service, storefront-web
+  Out of scope: admin-web (separate team), notification-worker (manual in staging),
+                Stripe internals, infrastructure/k8s configuration
+```
+
+---
+
+#### How the SUT Definition Drives Test Design
+
+| SUT Element | Drives |
+|---|---|
+| Architecture (microservices) | Need contract tests at every service boundary |
+| External dependency (Stripe) | Must mock in unit/API; define mock contract |
+| Shared cache (Redis) | Cache invalidation tests; concurrency edge cases |
+| Message queue (RabbitMQ) | Event-driven integration tests; consumer tests |
+| Multiple DB owners | No cross-DB joins; each service tests its own DB |
+| Environment matrix | Which test types run where and who triggers them |
+| Out-of-scope components | Stops scope creep; avoids duplicating other teams' work |
+
+---
+
 ### Step 1 — Understand the Business Flow
 
 Before writing a single test case, map the business domain:
@@ -640,7 +837,7 @@ describe('CheckoutForm', () => {
 **What:** Full user journey across the real, fully deployed system (all services running).
 **When to automate:** Critical business flows only. Keep this layer small.
 **Speed:** Seconds to minutes per test
-**Tools:** Playwright
+**Tools:** Playwright (recommended), Cypress
 
 ```typescript
 // Example: E2E test for complete checkout flow
