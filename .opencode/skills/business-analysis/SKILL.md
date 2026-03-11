@@ -1,5 +1,5 @@
 ---
-name: pm
+name: business-analysis
 description: >
   Use this skill whenever the user needs to GATHER and STRUCTURE requirements for a feature,
   system, or product. Covers the full requirement engineering process: eliciting requirements
@@ -24,7 +24,7 @@ description: >
 This skill takes a **feature idea or stakeholder brief as input** and produces a **structured requirements document** ready for engineering and QA.
 
 ```
-[pm]                                  →     [software-tester-design]
+[business-analysis]                              →     [software-tester-design]
 ──────────────────────────                  ──────────────────────────────
 Step 1: Elicit requirements                 Receives: FR list, User Story Map,
 Step 2: Build User Story Map                         Input/Output specs, NFRs
@@ -42,38 +42,46 @@ Before writing anything, ask questions to surface what is known and what is miss
 ### Elicitation Checklist
 
 **Business context**
+
 - What problem does this feature solve? For whom?
 - What is the trigger that starts this process? (user action, event, scheduled job, external call)
 - What does success look like for the business?
 
 **Actors**
+
 - Who interacts with this feature? (end user, admin, system, 3rd-party service)
 - What role/permission does each actor need?
 
 **Happy path**
+
 - Walk me through the step-by-step flow when everything goes right.
 - What does the user/system do first? Then what?
 
 **Business conditions and rules**
+
 - Are there conditions that must be true before this step can proceed?
 - Are there limits, thresholds, or allowlists? (e.g. max attempts, approved domains, value ranges)
 - Are there any time constraints? (expiry, scheduling, deadlines)
 
 **Alternate and exception paths**
+
 - What happens if the user provides invalid data?
 - What happens if a downstream service is unavailable?
 - Can this action be retried? Reversed? Cancelled?
 
 **Data**
+
 - What data does the system receive as input? From where?
 - What data does the system produce as output? To where?
 - What data is persisted? For how long?
 
 **Integration**
+
 - Does this feature call any external APIs or services?
 - Does it publish or consume events from a queue/broker?
 
 **Non-functional**
+
 - Are there response time expectations?
 - Are there volume or concurrency expectations?
 - Are there compliance or security requirements? (PII, encryption, audit logs)
@@ -97,6 +105,7 @@ ACTIVITY   (the high-level goal the user wants to accomplish — informed by res
 ```
 
 **Key rules:**
+
 - Steps are ordered by **when they happen in the job**, not by which UI screen they belong to.
 - A step can belong to any actor — user, backend system, email provider, payment gateway, etc. Include all of them.
 - Stories describe **what the user (or actor) wants to accomplish at that step**, not what button they click.
@@ -225,10 +234,10 @@ Draw a swimlane diagram to show **who does what and when** across all actors. Us
 
 ### When to use each
 
-| Diagram type        | Use when                                                          |
-| ------------------- | ----------------------------------------------------------------- |
-| `sequenceDiagram`   | The flow is primarily sequential — request/response between actors |
-| `flowchart LR/TD`   | The flow has many branches, decisions, or loops                   |
+| Diagram type      | Use when                                                           |
+| ----------------- | ------------------------------------------------------------------ |
+| `sequenceDiagram` | The flow is primarily sequential — request/response between actors |
+| `flowchart LR/TD` | The flow has many branches, decisions, or loops                    |
 
 ### Sequence Diagram Template
 
@@ -319,21 +328,21 @@ For every action in the system, specify all input and output fields precisely. T
 
 ### Input Field Table
 
-| Field         | Type     | Required | Format / Constraints                                   | Example            |
-| ------------- | -------- | -------- | ------------------------------------------------------ | ------------------ |
-| `displayName` | `string` | Yes      | 3–30 chars, alphanumeric, no spaces                    | `alice123`         |
-| `email`       | `string` | Yes      | Valid email format, domain on approved whitelist        | `alice@gmail.com`  |
-| `password`    | `string` | Yes      | 8–64 chars, ≥1 uppercase, ≥1 digit, ≥1 special char   | `ValidPass1!`      |
+| Field         | Type     | Required | Format / Constraints                                | Example           |
+| ------------- | -------- | -------- | --------------------------------------------------- | ----------------- |
+| `displayName` | `string` | Yes      | 3–30 chars, alphanumeric, no spaces                 | `alice123`        |
+| `email`       | `string` | Yes      | Valid email format, domain on approved whitelist    | `alice@gmail.com` |
+| `password`    | `string` | Yes      | 8–64 chars, ≥1 uppercase, ≥1 digit, ≥1 special char | `ValidPass1!`     |
 
 ### Output Field Table (Success Response)
 
-| Field         | Type       | Always present | Format                    | Example                                |
-| ------------- | ---------- | -------------- | ------------------------- | -------------------------------------- |
-| `userId`      | `string`   | Yes            | UUID v4                   | `a1b2c3d4-...`                         |
-| `displayName` | `string`   | Yes            | As provided               | `alice123`                             |
-| `email`       | `string`   | Yes            | Lowercase                 | `alice@gmail.com`                      |
-| `createdAt`   | `string`   | Yes            | ISO 8601 UTC              | `2025-01-15T10:30:00Z`                 |
-| `password`    | —          | Never          | Must NOT appear in response | —                                    |
+| Field         | Type     | Always present | Format                      | Example                |
+| ------------- | -------- | -------------- | --------------------------- | ---------------------- |
+| `userId`      | `string` | Yes            | UUID v4                     | `a1b2c3d4-...`         |
+| `displayName` | `string` | Yes            | As provided                 | `alice123`             |
+| `email`       | `string` | Yes            | Lowercase                   | `alice@gmail.com`      |
+| `createdAt`   | `string` | Yes            | ISO 8601 UTC                | `2025-01-15T10:30:00Z` |
+| `password`    | —        | Never          | Must NOT appear in response | —                      |
 
 ### Error Response Format
 
@@ -353,15 +362,15 @@ For every action in the system, specify all input and output fields precisely. T
 
 ### Error Code Registry
 
-| HTTP Status | Code                   | When                                              |
-| ----------- | ---------------------- | ------------------------------------------------- |
-| 400         | `VALIDATION_ERROR`     | One or more input fields fail validation          |
-| 400         | `MIN_LENGTH`           | Field value is shorter than the minimum           |
-| 400         | `MAX_LENGTH`           | Field value exceeds the maximum                   |
-| 400         | `INVALID_FORMAT`       | Field value does not match the required pattern   |
-| 400         | `DOMAIN_NOT_ALLOWED`   | Email domain is not on the approved whitelist     |
-| 409         | `EMAIL_ALREADY_EXISTS` | An account with this email already exists         |
-| 500         | `INTERNAL_ERROR`       | Unexpected server error                           |
+| HTTP Status | Code                   | When                                            |
+| ----------- | ---------------------- | ----------------------------------------------- |
+| 400         | `VALIDATION_ERROR`     | One or more input fields fail validation        |
+| 400         | `MIN_LENGTH`           | Field value is shorter than the minimum         |
+| 400         | `MAX_LENGTH`           | Field value exceeds the maximum                 |
+| 400         | `INVALID_FORMAT`       | Field value does not match the required pattern |
+| 400         | `DOMAIN_NOT_ALLOWED`   | Email domain is not on the approved whitelist   |
+| 409         | `EMAIL_ALREADY_EXISTS` | An account with this email already exists       |
+| 500         | `INTERNAL_ERROR`       | Unexpected server error                         |
 
 ---
 
@@ -485,35 +494,44 @@ Use this structure to produce the final requirements document for a feature:
 # Requirements — [Feature Name]
 
 ## 1. Overview
+
 [2–3 sentences: what this feature does, who it is for, and why it is being built]
 
 ## 2. Actors
-| Actor          | Description                          |
-| -------------- | ------------------------------------ |
-| [Role]         | [What they do in this feature]       |
+
+| Actor  | Description                    |
+| ------ | ------------------------------ |
+| [Role] | [What they do in this feature] |
 
 ## 3. User Story Map
+
 [US-xxx stories with AC and BC — from Step 2]
 
 ## 4. Business Flow — Swimlane
+
 [Mermaid diagram — from Step 3]
 
 ## 5. Input / Output Field Specification
+
 [Input and output tables per action — from Step 4]
 [Error code registry]
 
 ## 6. Functional Requirements
+
 [FR-xxx list — from Step 5]
 
 ## 7. Non-Functional Requirements
+
 [NFR-xxx list grouped by category — from Step 6]
 
 ## 8. Open Questions
-| # | Question                              | Owner    | Due     | Status |
-|---|---------------------------------------|----------|---------|--------|
-| 1 | [Unresolved question from elicitation]| [Person] | [Date]  | Open   |
+
+| #   | Question                               | Owner    | Due    | Status |
+| --- | -------------------------------------- | -------- | ------ | ------ |
+| 1   | [Unresolved question from elicitation] | [Person] | [Date] | Open   |
 
 ## 9. Out of Scope
+
 - [Things explicitly not included in this feature]
 ```
 
