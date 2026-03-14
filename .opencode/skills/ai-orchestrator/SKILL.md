@@ -4,15 +4,17 @@ description: >
   Use this skill to DRIVE the TDD development loop for a single scenario. The AI Orchestrator
   receives a scenario (SC-xxx) with its test cases (TC-xxx) and architecture (API contract, DB
   schema) and autonomously implements it following strict TDD: write failing test first (Red),
-  implement minimum code to pass (Green), refactor, integrate, and run the full test suite.
+  implement minimum code to pass (Green), refactor, integrate, run the full test suite, generate
+  technical documentation, and signal ready for review.
   Covers: reading scenario scope and Definition of Done (TC-xxx), writing failing tests before
   any implementation, implementing just enough code to make tests pass, refactoring without
-  changing behavior, integrating changes, running the full test suite, and signaling ready for
-  review.
+  changing behavior, integrating changes, running the full test suite, generating technical
+  documentation (README, setup guides, inline code docs), and signaling ready for review.
   Trigger when the user mentions: implement scenario, TDD, test-driven development, red-green-
   refactor, write the test first, implement SC-xxx, build this scenario, "make TC-xxx pass",
-  "implement the feature using TDD", "start the dev loop", "orchestrate development", or when
-  a scenario has architecture ready and needs to be implemented.
+  "implement the feature using TDD", "start the dev loop", "orchestrate development", technical
+  documentation, README, setup guide, or when a scenario has architecture ready and needs to
+  be implemented.
   Always run AFTER software-architecture — architecture defines what to build, orchestrator
   builds it. Never skip the test-first step. Never approve your own work — signal ready for
   human review.
@@ -30,7 +32,7 @@ The AI Orchestrator is the autonomous implementation engine. It receives a scena
 SC-xxx Scenario       ──┐    API contract            ──┐  TC-xxx Test Cases     ──┐
 Iteration scope       ──┤    DB schema               ──┤  Test data specs       ──┤
 DEV-xxx Tasks         ──┘    Integration contracts   ──┘  Expected I/O          ──┘
-                              ADRs
+                              ADRs + OpenAPI
                                         │
                                         ↓
                            [ai-orchestrator]
@@ -41,7 +43,8 @@ DEV-xxx Tasks         ──┘    Integration contracts   ──┘  Expected I
                            Step 4: Refactor
                            Step 5: Integrate
                            Step 6: Run full test suite
-                           Step 7: Signal ready for review
+                           Step 7: Generate technical documentation
+                           Step 8: Signal ready for review
                                         │
                                         ↓
                             [Human Review / UAT]
@@ -387,9 +390,145 @@ npm test -- src/__tests__/feature/action.api.test.ts
 
 ---
 
-## Step 7 — Signal Ready for Review
+## Step 7 — Generate Technical Documentation
 
-The orchestrator's job is done when all tests pass. Now signal for human review.
+After tests pass, generate technical documentation to help developers understand and maintain the code.
+
+### Documentation Types
+
+| Type | Purpose | When to Generate |
+|------|---------|------------------|
+| **README** | Project/feature overview, setup instructions | New feature or significant change |
+| **Inline comments** | Explain complex logic | Non-obvious code sections |
+| **JSDoc / docstrings** | Function/method documentation | Public APIs and interfaces |
+| **Setup guide** | Environment setup, dependencies | New dependencies added |
+| **Migration guide** | Breaking changes, upgrade paths | Breaking API changes |
+
+### README Template
+
+```markdown
+# [Feature Name]
+
+## Overview
+
+[Brief description of what this feature does and why it exists]
+
+**Scenario:** SC-xxx-001
+**Stories:** US-xxx-001, US-xxx-002
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Run migrations
+npm run migrate
+
+# Start development server
+npm run dev
+```
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/[resource]` | Create new [resource] |
+| GET | `/api/[resource]/{id}` | Get [resource] by ID |
+
+See [OpenAPI specification](./docs/openapi/[feature]-api.yaml) for full API documentation.
+
+## Configuration
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `[VAR_NAME]` | [Description] | `[default]` |
+
+## Database
+
+### Tables
+
+- `[table_name]` — [Description of what this table stores]
+
+### Migrations
+
+Run migrations with:
+
+```bash
+npm run migrate
+```
+
+## Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests for this feature
+npm test -- src/__tests__/[feature]/
+```
+
+## Architecture
+
+[Brief description of how this feature is structured]
+
+```
+src/
+  controllers/[feature].controller.ts  — HTTP handlers
+  services/[feature].service.ts        — Business logic
+  models/[feature].model.ts            — Data model
+  __tests__/[feature]/                 — Test files
+```
+
+## Related
+
+- [Architecture doc](./docs/architecture/[feature].md)
+- [User documentation](./docs/user-guide/[feature].md)
+```
+
+### Inline Documentation Guidelines
+
+```typescript
+/**
+ * Creates a new user account with email verification.
+ *
+ * @param input - User registration data
+ * @param input.displayName - Display name (3-50 chars, alphanumeric)
+ * @param input.email - Email address (must be unique)
+ * @param input.password - Password (will be hashed)
+ * @returns The created user (without password)
+ * @throws {ValidationError} When input validation fails
+ * @throws {ConflictError} When email already exists
+ *
+ * @example
+ * const user = await createUser({
+ *   displayName: 'alice',
+ *   email: 'alice@example.com',
+ *   password: 'SecurePass1!'
+ * });
+ *
+ * @see TC-REG-001 — Happy path test
+ * @see TC-REG-002 — Duplicate email test
+ */
+async function createUser(input: CreateUserInput): Promise<User> {
+  // Implementation
+}
+```
+
+### Documentation Checklist
+
+- [ ] README updated with new feature/changes
+- [ ] Public functions have JSDoc/docstrings
+- [ ] Complex logic has inline comments explaining "why"
+- [ ] Environment variables documented
+- [ ] Database changes documented
+- [ ] API endpoints listed with links to OpenAPI spec
+
+---
+
+## Step 8 — Signal Ready for Review
+
+The orchestrator's job is done when all tests pass and documentation is generated. Now signal for human review.
 
 ### Commit Guidelines
 
@@ -528,6 +667,12 @@ it's not in scope. Note it for future scenarios and move on.
                     │ All pass
                     ▼
             ┌───────────────┐
+            │  GENERATE     │
+            │  TECH DOCS    │
+            └───────┬───────┘
+                    │
+                    ▼
+            ┌───────────────┐
             │ READY FOR     │
             │    REVIEW     │
             └───────────────┘
@@ -549,6 +694,7 @@ Before signaling ready for review, all gates must pass:
 | Coverage | Meets threshold (if configured) |
 | Security | No obvious vulnerabilities introduced |
 | Architecture | Implementation matches contract |
+| Documentation | README updated, public APIs documented |
 
 ---
 
@@ -559,8 +705,9 @@ The orchestrator produces these artifacts:
 1. **Test files** — Automated tests for each TC-xxx
 2. **Implementation code** — Feature code that makes tests pass
 3. **Migrations** — Database changes (if any)
-4. **Commits** — Clean commit history with descriptive messages
-5. **Ready-for-review signal** — Summary document for human reviewer
+4. **Technical documentation** — README, inline docs, JSDoc/docstrings
+5. **Commits** — Clean commit history with descriptive messages
+6. **Ready-for-review signal** — Summary document for human reviewer
 
 All artifacts trace back to the scenario:
 
@@ -570,6 +717,8 @@ SC-xxx-001 (Scenario)
     ├── TC-xxx-001 → test file → implementation → commit
     ├── TC-xxx-002 → test file → implementation → commit
     └── TC-xxx-003 → test file → implementation → commit
+    │
+    ├── Technical docs → README.md, JSDoc, inline comments
     │
     └── Ready-for-Review signal → Human approval required
 ```

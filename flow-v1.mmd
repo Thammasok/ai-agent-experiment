@@ -1,5 +1,4 @@
 flowchart LR
-    %% Nodes
     subgraph PD["Product Discovery"]
         BA["Requirement Gathering\n(BA)"]
         SWT["Test Design\n(SWT)"]
@@ -14,6 +13,7 @@ flowchart LR
         subgraph ARCH["Just-enough Architecture\n(per scenario)"]
             APIC["API Contract"]
             DBS["DB Schema"]
+            OPENAPI["OpenAPI Spec"]
         end
 
         subgraph DEVLOOP["Development Loop"]
@@ -22,6 +22,7 @@ flowchart LR
             REFAC["Refactor"]
             INT["Integrate"]
             TESTALL["Test All\n(automated suite)"]
+            TECHDOC["Technical Docs\n(README, setup)"]
         end
     end
 
@@ -30,16 +31,20 @@ flowchart LR
     PASS{{"is Pass?"}}
     BUG["Fix Bug"]
     REQ["Revisit Requirement\n(BA / PM)"]
-    RETRO["Iteration Retrospect\n(PM adapts backlog)"]
 
-    %% Edge connections between nodes
+    subgraph DOCS["Documentation"]
+        USERDOC["User Documentation\n(technical-writer)"]
+    end
+
+    RETRO["Iteration Retrospect\n(PM adapts backlog +\ngenerates release notes)"]
+
     PD --> PM
     PM --> ORC
     ORC --> ARCH
     APIC --> TDD
     DBS --> TDD
-    TDD --> IMPL --> REFAC --> INT --> TESTALL
-    TESTALL --> UAT
+    TDD --> IMPL --> REFAC --> INT --> TESTALL --> TECHDOC
+    TECHDOC --> UAT
     UAT --> HUMAN
     HUMAN --> PASS
 
@@ -47,5 +52,6 @@ flowchart LR
     PASS -- "No: bug" --> BUG --> DEVLOOP
     PASS -- "No: wrong\nrequirement" --> REQ --> PM
 
-    ORC -- "iteration done\n(all scenarios pass)" --> RETRO
+    ORC -- "iteration done\n(all scenarios pass)" --> USERDOC
+    USERDOC --> RETRO
     RETRO -- "next iteration" --> PM

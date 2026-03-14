@@ -8,14 +8,15 @@ description: >
   skill, grouping them into Epics and Stories, breaking down developer implementation tasks
   (DEV-xxx) per layer (API, DB, frontend, infra), mapping dependencies, prioritising by MoSCoW,
   slicing them into agile iterations (iterative & incremental delivery), assigning SC-xxx test
-  scenarios and TC-xxx test cases to each iteration as the Definition of Done, and producing a
-  full traceability matrix.
+  scenarios and TC-xxx test cases to each iteration as the Definition of Done, producing a
+  full traceability matrix, and generating release notes at iteration retrospect.
   Trigger when the user mentions: project plan, sprint plan, iteration plan, task breakdown,
   developer tasks, backlog, epic, milestone, delivery plan, work breakdown, who builds what,
-  implementation tasks, DEV tasks, agile, iterative, incremental, sprint, "break this into tasks",
-  "plan the sprint for", "plan the iteration for", "assign work", "what does the dev need to
-  implement", "map requirements to tasks", "slice the work", or asks to coordinate between
-  BA and QA output.
+  implementation tasks, DEV tasks, agile, iterative, incremental, sprint, release notes,
+  changelog, what shipped, iteration summary, "break this into tasks", "plan the sprint for",
+  "plan the iteration for", "assign work", "what does the dev need to implement",
+  "map requirements to tasks", "slice the work", "generate release notes", or asks to coordinate
+  between BA and QA output.
   Always run AFTER business-analysis and software-tester-design — never before.
 ---
 
@@ -42,11 +43,16 @@ IO spec Input/Output    ──┘
                    Step 5: Slice into iterations
                             (assign SC-xxx + TC-xxx per iteration)
                    Step 6: Produce traceability matrix
+                   Step 7: Generate release notes (at retrospect)
                               ↓
                    [software-engineer]  [software-tester-automation]
                    Receives: DEV-xxx    Receives: TC-xxx scoped to
                    task cards + SC/TC  their iteration
                    for the iteration
+                              ↓
+                   [stakeholders]
+                   Receives: Release notes summarizing
+                   what shipped in each iteration
 ```
 
 ---
@@ -563,6 +569,140 @@ Use this matrix throughout delivery to track coverage gaps — if a FR has no li
 
 ---
 
+## Step 7 — Generate Release Notes
+
+At the end of each iteration (during retrospect), generate release notes summarizing what was delivered. Release notes communicate changes to all stakeholders.
+
+### When to Generate
+
+```
+Iteration complete (all P1 TCs pass)
+           ↓
+     UAT approved
+           ↓
+   Human review passed
+           ↓
+  Generate release notes
+           ↓
+     Retrospect
+```
+
+### Release Notes Format
+
+```markdown
+# Release Notes — [Feature/Product Name]
+
+## Version [X.Y.Z] — [YYYY-MM-DD]
+
+### Iteration [N]: [Iteration Goal]
+
+#### ✨ New Features
+
+- **[Feature Name]** — [Brief description of what users can now do]
+  - Scenarios delivered: SC-xxx-001, SC-xxx-002
+  - Stories completed: US-xxx-001, US-xxx-002
+
+- **[Feature Name]** — [Brief description]
+  - Scenarios delivered: SC-xxx-003
+  - Stories completed: US-xxx-003
+
+#### 🐛 Bug Fixes
+
+- **[Bug Title]** — [What was fixed and how it affects users]
+  - Related: BUG-xxx-001, TC-xxx-010
+
+#### 🔧 Improvements
+
+- **[Improvement]** — [What was improved]
+  - Related: DEV-xxx-005
+
+#### ⚠️ Known Issues
+
+- [Issue description] — [Workaround if any]
+  - Tracking: ISSUE-xxx
+
+#### 📊 Metrics
+
+| Metric | Value |
+|--------|-------|
+| Stories completed | X |
+| Test cases passed | X / Y |
+| Bugs fixed | X |
+| New bugs discovered | X |
+
+#### 🔗 Links
+
+- [Demo environment](https://staging.example.com)
+- [API documentation](https://docs.example.com/api)
+- [Full changelog](./CHANGELOG.md)
+
+---
+
+### Previous Releases
+
+- [Version X.Y.Z-1](./releases/vX.Y.Z-1.md)
+- [Version X.Y.Z-2](./releases/vX.Y.Z-2.md)
+```
+
+### Release Notes Guidelines
+
+| Guideline | Rationale |
+|-----------|-----------|
+| **User-focused language** | Describe what users can do, not technical implementation details |
+| **Group by type** | Features, fixes, improvements — easy to scan |
+| **Link to scenarios** | Traceability to requirements |
+| **Include metrics** | Stakeholders want to see progress |
+| **Note known issues** | Transparency builds trust |
+| **Version semantically** | MAJOR.MINOR.PATCH for predictable versioning |
+
+### Audience-Specific Views
+
+Different stakeholders need different views:
+
+| Audience | Focus | Detail Level |
+|----------|-------|--------------|
+| **End Users** | What's new, what's fixed | High-level, benefits-focused |
+| **Product Team** | Stories delivered, metrics | Medium, traceable to backlog |
+| **Engineering** | Technical changes, breaking changes | Detailed, includes APIs |
+| **Support Team** | Known issues, workarounds | Practical, troubleshooting |
+
+### Changelog File
+
+Maintain a cumulative `CHANGELOG.md` in the repository:
+
+```markdown
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+### Added
+- [Feature in progress]
+
+## [1.2.0] — 2025-03-15
+
+### Added
+- User registration with email verification (SC-REG-001 through SC-REG-004)
+- Password reset flow (SC-PWD-001, SC-PWD-002)
+
+### Changed
+- Improved validation error messages (DEV-REG-007)
+
+### Fixed
+- Email delivery retry logic now works with provider outages (BUG-REG-001)
+
+## [1.1.0] — 2025-03-01
+
+### Added
+- Initial user authentication (SC-AUTH-001)
+```
+
+---
+
 ## Output Document Template
 
 ```markdown
@@ -586,11 +726,16 @@ Use this matrix throughout delivery to track coverage gaps — if a FR has no li
 ## 6. Traceability Matrix
 [Full matrix from Step 6]
 
-## 7. Open Risks
+## 7. Release Notes
+[Generated at retrospect from Step 7]
+- Current version release notes
+- Link to CHANGELOG.md
+
+## 8. Open Risks
 | # | Risk                                  | Likelihood | Impact | Mitigation           |
 |---|---------------------------------------|------------|--------|----------------------|
 | 1 | [e.g. Mail provider SLA unknown]      | Medium     | High   | [Spike in Sprint 1]  |
 
-## 8. Out of Scope
+## 9. Out of Scope
 - [Tasks explicitly deferred or excluded]
 ```

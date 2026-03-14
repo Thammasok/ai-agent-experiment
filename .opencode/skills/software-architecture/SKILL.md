@@ -2,17 +2,20 @@
 name: software-architecture
 description: >
   Use this skill whenever the user needs to DESIGN the technical architecture for a scenario or
-  feature — API contracts, database schemas, and system design decisions. This skill produces
-  just-enough architecture per scenario (not upfront big design), following agile principles.
+  feature — API contracts, database schemas, OpenAPI specifications, and system design decisions.
+  This skill produces just-enough architecture per scenario (not upfront big design), following
+  agile principles.
   Covers: reading scenario requirements (SC-xxx) and test cases (TC-xxx), designing API contracts
   (endpoints, request/response schemas, error codes), designing database schemas (tables, columns,
-  indexes, constraints, migrations), documenting integration points, and producing architecture
-  decision records (ADRs) when trade-offs exist.
+  indexes, constraints, migrations), generating OpenAPI/Swagger specifications for API documentation,
+  documenting integration points, and producing architecture decision records (ADRs) when trade-offs
+  exist.
   Trigger when the user mentions: architecture, API design, API contract, database design, schema,
   data model, ERD, entity relationship, endpoint design, REST API, GraphQL schema, DB migration,
-  table structure, system design, technical design, "how should I structure the API", "what tables
-  do I need", "design the database for", "create the API contract for", or when a scenario needs
-  technical implementation planning.
+  table structure, system design, technical design, OpenAPI, Swagger, API documentation,
+  "how should I structure the API", "what tables do I need", "design the database for",
+  "create the API contract for", "generate OpenAPI spec", or when a scenario needs technical
+  implementation planning.
   Always run AFTER business-analysis and software-tester-design — architecture serves the scenario,
   not the other way around. Output feeds directly into the ai-orchestrator for TDD implementation.
 ---
@@ -37,9 +40,10 @@ DEV-xxx Task breakdown      ──┤   Expected I/O specs        ──┘
                    Step 3: Design database schema
                    Step 4: Document integration points
                    Step 5: Record architecture decisions (ADR)
+                   Step 6: Generate OpenAPI specification
                               ↓
                    [ai-orchestrator]
-                   Receives: API contract + DB schema + ADRs
+                   Receives: API contract + DB schema + OpenAPI + ADRs
                    Uses them to write failing tests (TDD Red)
                    then implements (TDD Green)
 ```
@@ -418,6 +422,219 @@ Negative:
 
 ---
 
+## Step 6 — Generate OpenAPI Specification
+
+Generate an OpenAPI 3.0+ specification from the API contracts designed in Step 2. This provides machine-readable API documentation for developers and integrators.
+
+### OpenAPI Template
+
+```yaml
+openapi: 3.0.3
+info:
+  title: [Feature Name] API
+  description: |
+    API endpoints for [Scenario ID]: [Scenario Title]
+
+    Generated from architecture design for scenario SC-xxx-001.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development
+  - url: https://staging.example.com/api
+    description: Staging environment
+  - url: https://api.example.com
+    description: Production
+
+tags:
+  - name: [Resource]
+    description: Operations for [resource] management
+
+paths:
+  /[resource]:
+    post:
+      tags:
+        - [Resource]
+      summary: Create a new [resource]
+      description: |
+        Creates a new [resource] with the provided data.
+
+        **Scenario:** SC-xxx-001
+        **Test Cases:** TC-xxx-001, TC-xxx-002
+      operationId: create[Resource]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Create[Resource]Request'
+            examples:
+              valid:
+                summary: Valid request
+                value:
+                  fieldName: "validValue"
+                  email: "user@example.com"
+              invalid:
+                summary: Invalid request (validation error)
+                value:
+                  fieldName: ""
+                  email: "invalid"
+      responses:
+        '201':
+          description: Resource created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/[Resource]Response'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict (resource already exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /[resource]/{id}:
+    get:
+      tags:
+        - [Resource]
+      summary: Get [resource] by ID
+      operationId: get[Resource]ById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Resource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/[Resource]Response'
+        '404':
+          description: Resource not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Create[Resource]Request:
+      type: object
+      required:
+        - fieldName
+        - email
+      properties:
+        fieldName:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9]+$'
+          description: Display name (alphanumeric, 3-50 chars)
+          example: "validValue"
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: Email address (must be unique)
+          example: "user@example.com"
+        optionalField:
+          type: string
+          nullable: true
+          description: Optional field
+
+    [Resource]Response:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier
+        fieldName:
+          type: string
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ValidationError:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          example: "One or more fields are invalid."
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              code:
+                type: string
+              message:
+                type: string
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+```
+
+### OpenAPI Generation Guidelines
+
+| Guideline | Rationale |
+|-----------|-----------|
+| One spec per scenario (or feature) | Keep specs focused and manageable |
+| Include examples | Helps developers understand expected data |
+| Link to test cases | Traceability from spec to verification |
+| Use `$ref` for reusable schemas | DRY principle, consistent types |
+| Version the API | Breaking changes need version bumps |
+| Document all error codes | Consumers need to handle errors |
+
+### File Location
+
+```
+docs/
+  openapi/
+    [feature]-api.yaml        # OpenAPI spec for feature
+    [feature]-api.json        # JSON version (auto-generated)
+```
+
+---
+
 ## Output Document Template
 
 ```markdown
@@ -438,14 +655,19 @@ Negative:
 ## 5. Architecture Decisions
 [ADRs from Step 5, if any]
 
-## 6. Test Traceability
+## 6. OpenAPI Specification
+[Link to generated OpenAPI spec file from Step 6]
+- File: `docs/openapi/[feature]-api.yaml`
+- Interactive docs: [Swagger UI / Redoc link when deployed]
+
+## 7. Test Traceability
 | API / Table | Test Case | What it validates |
 |-------------|-----------|-------------------|
 | POST /users | TC-xxx-001 | Happy path — 201 with user body |
 | POST /users | TC-xxx-002 | Duplicate email — 409 |
 | users table | TC-xxx-003 | Email unique constraint enforced |
 
-## 7. Notes for Implementation
+## 8. Notes for Implementation
 - [Anything the developer needs to know]
 - [Gotchas, edge cases, or assumptions]
 ```

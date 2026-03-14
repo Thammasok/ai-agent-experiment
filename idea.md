@@ -4,66 +4,15 @@ Concepts: **Shift-Left Testing · Agile / Iterative & Incremental · TDD · User
 
 ---
 
-## Original Flow
+## Design Decisions
 
-```mermaid
-flowchart LR
-    subgraph PD["Product Discovery"]
-        BA["Requirement Gathering\n(BA)"]
-        SWT["Test Design\n(SWT)"]
-        UX["UX/UI Design\n(UX/UI)"]
-    end
+### 1. Architecture Design is iterative, not upfront
 
-    subgraph ARCH["Architecture Design"]
-        SAD["Software Architecture\nDesign"]
-        API["API Design"]
-        DB["Database Design"]
-    end
+Architecture is scoped **per scenario** (just enough for the current task), living inside the iteration loop alongside the AI Orchestrator — not waterfall-style upfront design.
 
-    subgraph DEVLOOP["Development Loop"]
-        TDD["Write Test First\n(TDD)"]
-        INT["Integrate"]
-        TESTALL["Test All"]
-        SCRIPT["API Test Script\n(software-tester-automation)"]
-    end
+### 2. AI Orchestrator has explicit responsibility boundaries
 
-    PM["Breakdown Scenario\n(PM)"]
-    DEV["Breakdown Development Task\n(Software Engineer)"]
-    ORC["AI Orchestrator\n(Software Engineer)"]
-    SEL["Select new\nScenario / Case"]
-    UAT["Product Review / UAT\n(PM + Software Tester)"]
-    HUMAN["Product Review\n(Human)"]
-    PASS{{"is Pass?"}}
-    CR["Create Change\nRequest Task\n(PM / Human)"]
-
-    PD --> PM
-    PM --> SAD
-    PM --> API
-    PM --> DB
-    ARCH --> DEV
-    DEV --> ORC
-    ORC --> SEL
-    SEL --> DEVLOOP
-    TDD --> INT --> TESTALL --> SCRIPT
-    DEVLOOP --> UAT
-    UAT --> HUMAN
-    HUMAN --> PASS
-    PASS -- Yes --> SEL
-    PASS -- No --> CR
-    CR --> DEVLOOP
-```
-
----
-
-## Suggested Improvements
-
-### 1. Architecture Design should be iterative, not upfront
-
-The original flow does all architecture before any development — this is waterfall-shaped. Architecture should be scoped **per scenario** (just enough for the current task), living inside the iteration loop alongside the AI Orchestrator.
-
-### 2. AI Orchestrator needs an explicit responsibility boundary
-
-The Orchestrator is the most novel node but currently a black box. It should be defined as:
+The Orchestrator is defined as:
 
 | Does | Does NOT |
 |---|---|
@@ -73,84 +22,104 @@ The Orchestrator is the most novel node but currently a black box. It should be 
 | Refactor, integrate, run full test suite | |
 | Commit and signal ready for review | |
 
-### 3. Change Request needs two paths, not one
+### 3. Change Request has two paths
 
 Not all failures are the same:
 - **Bug** → fix in the Development Loop
 - **Wrong requirement / misunderstood scenario** → must go back to BA/PM, not just the dev loop
 
-### 4. Missing: Iteration Retrospect
+### 4. Iteration Retrospect
 
-"Yes → Select next Scenario" loops forever with no higher-level checkpoint. After a batch of scenarios (one iteration) is done, PM should review the increment, update priorities, and adapt the backlog before the next iteration begins.
+After a batch of scenarios (one iteration) is done, PM reviews the increment, updates priorities, and adapts the backlog before the next iteration begins.
 
-### 5. UX/UI has no lane in the Development Loop
+### 5. UX/UI awareness in Development Loop
 
-UX/UI disappears after Product Discovery. The AI Orchestrator should know whether the current scenario is backend-only, frontend-only, or full-stack and run the appropriate loop.
+The AI Orchestrator knows whether the current scenario is backend-only, frontend-only, or full-stack and runs the appropriate loop.
 
-### 6. Missing skills to build
+### 6. Documentation Generation
+
+Documentation should be generated at the right points in the workflow, not as an afterthought:
+
+| Document Type | When Generated | Owner Skill | Audience |
+|---|---|---|---|
+| **API Documentation** (OpenAPI/Swagger) | After architecture design | `software-architecture` | Developers, integrators |
+| **User Documentation** (guides, help) | After UAT passes | `technical-writer` | End users |
+| **Release Notes** | At iteration retrospect | `project-management` | All stakeholders |
+| **Technical Documentation** (README, setup) | During implementation | `ai-orchestrator` | Developers |
+
+### 7. Skills
 
 | Diagram node | Current skill | Gap |
 |---|---|---|
 | Requirement Gathering | `business-analysis` | ✓ |
 | Test Design | `software-tester-design` | ✓ |
-| Breakdown Scenario + Iteration | `project-management` | ✓ |
+| Breakdown Scenario + Iteration + Release Notes | `project-management` | ✓ |
 | API Test Script | `software-tester-automation` | ✓ |
-| Software **Architecture** / API / DB Design | `software-architecture` | ✓ |
-| AI Orchestrator | `ai-orchestrator` | ✓ |
+| Software **Architecture** / API / DB Design + OpenAPI | `software-architecture` | ✓ |
+| AI Orchestrator + Technical Docs | `ai-orchestrator` | ✓ |
+| User Documentation | `technical-writer` | ✓ |
 
 ---
 
-## Improved Flow
+## Flow
 
 ```mermaid
 flowchart LR
     subgraph PD["Product Discovery"]
-        BA["Requirement Gathering\n(BA)"]
-        SWT["Test Design\n(SWT)"]
+        BA["Requirement Gathering (BA)"]
+        SWT["Test Design (SWT)"]
         UX["UX/UI Design"]
     end
 
-    PM["Breakdown Scenarios\ninto Iterations\n(PM)"]
+    PM["Breakdown Scenarios into Iterations (PM)"]
 
     subgraph ITERATION["Iteration — one scenario at a time"]
-        ORC["AI Orchestrator\n(receives SC-xxx + TC-xxx)"]
+        ORC["AI Orchestrator (receives SC-xxx + TC-xxx)"]
 
-        subgraph ARCH["Just-enough Architecture\n(per scenario)"]
+        subgraph ARCH["Just-enough Architecture (per scenario)"]
             APIC["API Contract"]
             DBS["DB Schema"]
+            OPENAPI["OpenAPI Spec"]
         end
 
         subgraph DEVLOOP["Development Loop"]
-            TDD["Write Failing Test\n(TDD Red)"]
-            IMPL["Implement\n(TDD Green)"]
+            TDD["Write Failing Test (TDD Red)"]
+            IMPL["Implement (TDD Green)"]
             REFAC["Refactor"]
             INT["Integrate"]
-            TESTALL["Test All\n(automated suite)"]
+            TESTALL["Test All (automated suite)"]
+            TECHDOC["Technical Docs (README, setup)"]
         end
     end
 
-    UAT["UAT\n(PM + Software Tester)"]
+    UAT["UAT (PM + Software Tester)"]
     HUMAN["Human Review"]
     PASS{{"is Pass?"}}
     BUG["Fix Bug"]
-    REQ["Revisit Requirement\n(BA / PM)"]
-    RETRO["Iteration Retrospect\n(PM adapts backlog)"]
+    REQ["Revisit Requirement (BA / PM)"]
+
+    subgraph DOCS["Documentation"]
+        USERDOC["User Documentation (technical-writer)"]
+    end
+
+    RETRO["Iteration Retrospect (PM adapts backlog + generates release notes)"]
 
     PD --> PM
     PM --> ORC
     ORC --> ARCH
     APIC --> TDD
     DBS --> TDD
-    TDD --> IMPL --> REFAC --> INT --> TESTALL
-    TESTALL --> UAT
+    TDD --> IMPL --> REFAC --> INT --> TESTALL --> TECHDOC
+    TECHDOC --> UAT
     UAT --> HUMAN
     HUMAN --> PASS
 
-    PASS -- "Yes\nnext scenario" --> ORC
+    PASS -- "Yes next scenario" --> ORC
     PASS -- "No: bug" --> BUG --> DEVLOOP
-    PASS -- "No: wrong\nrequirement" --> REQ --> PM
+    PASS -- "No: wrong requirement" --> REQ --> PM
 
-    ORC -- "iteration done\n(all scenarios pass)" --> RETRO
+    ORC -- "iteration done (all scenarios pass)" --> USERDOC
+    USERDOC --> RETRO
     RETRO -- "next iteration" --> PM
 ```
 
@@ -167,3 +136,4 @@ flowchart LR
 | **Just-enough Architecture** | API contract and DB schema are produced per scenario, not upfront for the whole system. |
 | **Human-in-the-Loop** | Human review is a hard gate before marking a scenario done. Humans also handle wrong-requirement failures. |
 | **AI Orchestration** | AI drives the Development Loop autonomously within the boundaries of one scenario + its test cases. |
+| **Documentation as Code** | Docs are generated at the right points: OpenAPI from architecture, technical docs during implementation, user docs after UAT, release notes at retrospect. |
