@@ -95,8 +95,8 @@ UX/UI disappears after Product Discovery. The AI Orchestrator should know whethe
 | Test Design | `software-tester-design` | ✓ |
 | Breakdown Scenario + Iteration | `project-management` | ✓ |
 | API Test Script | `software-tester-automation` | ✓ |
-| Software **Architecture** / API / DB Design | — | **missing** |
-| AI Orchestrator | — | **missing** |
+| Software **Architecture** / API / DB Design | `software-architecture` | ✓ |
+| AI Orchestrator | `ai-orchestrator` | ✓ |
 
 ---
 
