@@ -9,7 +9,12 @@ description: >
   architecture diagrams, bugs, errors, performance issues, refactoring, PR reviews, unit/integration/
   contract/e2e tests, microservices, or asks to write/explain/fix any code.
   Adapt response detail to context: brief and direct for quick questions, thorough with best practices for complex topics.
+metadata:
+  author: Thammasok
+  version: 1.0.0
 ---
+
+> **Artifact Reference:** Refer to [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md) for artifact templates and storage locations when working with project documentation.
 
 # Software Engineer Skill
 

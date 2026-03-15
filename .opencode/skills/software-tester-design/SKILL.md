@@ -13,7 +13,12 @@ description: >
   asking what to test.
   Output of this skill feeds directly into the software-tester-automation skill.
   Always use this skill BEFORE writing any automation code — design first, automate second.
+metadata:
+  author: Thammasok
+  version: 1.0.0
 ---
+
+> **Artifact Reference:** All artifacts produced by this skill MUST follow the templates and storage locations defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Store outputs in `docs/test-design/`.
 
 # Software Tester — Test Design Skill
 

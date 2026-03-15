@@ -2,9 +2,11 @@
 name: agent-team-development
 description: Executes implementation plans by spawning parallel teammates in tmux split panes, each owning a module, with a persistent review teammate for quality gates. Use when you have a plan with 3+ independent modules touching different files and want parallel execution. Trigger phrases - "execute plan in parallel", "spawn teammates", "team development", "parallel implementation", "tmux teammates". NOT for sequential single-module tasks or when modules share the same files (use development-workflow instead).
 metadata:
-  author: Petr
+  author: Thammasok
   version: 1.0.0
 ---
+
+> **Artifact Reference:** Refer to [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md) for artifact templates and storage locations when working with project documentation.
 
 # Agent Team Development
 

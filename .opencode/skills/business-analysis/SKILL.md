@@ -15,7 +15,12 @@ description: >
   or describes a feature and asks how to document it.
   Output of this skill feeds directly into the software-tester-design skill for test planning.
   Always run this skill BEFORE test design — requirements first, tests second.
+metadata:
+  author: Thammasok
+  version: 1.0.0
 ---
+
+> **Artifact Reference:** All artifacts produced by this skill MUST follow the templates and storage locations defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Store outputs in `docs/requirements/`.
 
 # Product Manager — Requirements Engineering Skill
 
