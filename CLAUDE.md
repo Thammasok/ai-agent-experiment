@@ -46,17 +46,21 @@ Skills are defined in `.opencode/skills/[skill-name]/SKILL.md`. Each skill has a
 
 ### Key Artifacts
 
+All artifact templates, storage locations, and naming conventions are defined in `.opencode/artifacts/ARTIFACTS.md`.
+
 - **US-xxx** — User stories from business-analysis
 - **SC-xxx** — Test scenarios from software-tester-design
 - **TC-xxx** — Test cases (Definition of Done for implementation)
 - **DEV-xxx** — Developer tasks from project-management
 - **FR-xxx / NFR-xxx** — Functional and non-functional requirements
+- **ADR-xxx** — Architecture Decision Records from software-architecture
 
 ## Key Files
 
 - `idea.md` — Workflow diagram and design decisions
 - `AGENTS.md` — Code style guidelines for projects using these skills
 - `.opencode/skills/*/SKILL.md` — Individual skill definitions
+- `.opencode/artifacts/ARTIFACTS.md` — Centralized artifact storage, naming conventions, and templates
 
 ## Code Style (for projects using these skills)
 

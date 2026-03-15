@@ -23,6 +23,8 @@ This repository contains skill definitions (markdown files) rather than executab
 │   ├── technical-writer/
 │   ├── ai-orchestrator/
 │   └── agent-team-development/
+├── artifacts/           # Shared artifact templates and conventions
+│   └── ARTIFACTS.md    # Artifact storage structure, IDs, templates
 ├── package.json
 └── bun.lock
 ```
@@ -151,6 +153,16 @@ skill: project-management    → Sprint planning
 skill: technical-writer     → User documentation
 skill: ai-orchestrator      → TDD development loop
 ```
+
+### Artifact System
+
+All skills share a common artifact system defined in `.opencode/artifacts/ARTIFACTS.md`. This document specifies:
+- **Storage structure**: Where artifacts live (docs/requirements, docs/test-design, docs/project, docs/architecture, docs/user-guide, tests/)
+- **ID conventions**: US-xxx, FR-xxx, NFR-xxx, SC-xxx, TC-xxx, DEV-xxx, ADR-###, EPIC-xxx
+- **Templates**: All artifact types have standardized templates
+- **Lifecycle**: How artifacts flow between skills
+
+All skills MUST reference ARTIFACTS.md for artifact locations and naming conventions.
 
 ---
 
