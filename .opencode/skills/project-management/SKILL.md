@@ -18,9 +18,6 @@ description: >
   "map requirements to tasks", "slice the work", "generate release notes", or asks to coordinate
   between BA and QA output.
   Always run AFTER business-analysis and software-tester-design — never before.
-metadata:
-  author: Thammasok
-  version: 1.0.0
 ---
 
 > **Artifact Reference:** All artifacts produced by this skill MUST follow the templates and storage locations defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Store outputs in `docs/project/`.

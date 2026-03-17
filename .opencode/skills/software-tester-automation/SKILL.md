@@ -20,9 +20,6 @@ description: >
   "add tests to", or provides a TC-xxx test case and asks to automate it.
   Always check if test cases from software-tester-design exist before writing scripts.
   If no TCs exist yet, ask the user to run the design skill first or provide TC details.
-metadata:
-  author: Thammasok
-  version: 1.0.0
 ---
 
 > **Artifact Reference:** All artifacts consumed by this skill MUST follow the templates defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Read test cases from `docs/test-design/`; write test code to `src/__tests__/` and `e2e/`.

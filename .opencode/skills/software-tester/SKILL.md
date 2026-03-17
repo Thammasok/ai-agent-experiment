@@ -13,9 +13,6 @@ description: >
   to "write tests", "design tests", "create test cases", or "how do I test X".
   Always use this skill for any structured testing workflow — from business flow analysis
   through test design to automation code generation.
-metadata:
-  author: Thammasok
-  version: 1.0.0
 ---
 
 > **Artifact Reference:** All artifacts produced by this skill MUST follow the templates and storage locations defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Store outputs in `docs/test-design/`.

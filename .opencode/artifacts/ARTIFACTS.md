@@ -21,6 +21,13 @@ project-root/
 │   │   ├── test-cases.md       # TC-xxx specifications
 │   │   └── test-data.md        # Test data catalogue
 │   │
+│   ├── ux-design/              # UX/UI Design outputs
+│   │   ├── user-personas.md    # User persona definitions
+│   │   ├── user-journeys.md    # UJ-xxx user journey maps
+│   │   ├── wireframes.md       # WF-xxx wireframe specs
+│   │   ├── ui-specifications.md # UI-xxx component specs
+│   │   └── design-system.md    # Design tokens and guidelines
+│   │
 │   ├── project/                # Project Management outputs
 │   │   ├── backlog.md          # Epic and Story backlog
 │   │   ├── iterations/         # Iteration cards
@@ -61,6 +68,9 @@ project-root/
 | Non-Functional Requirement | `NFR-[FEATURE]-###` | NFR-AUTH-001 | business-analysis |
 | Test Scenario | `SC-[FEATURE]-###` | SC-AUTH-001 | software-tester-design |
 | Test Case | `TC-[FEATURE]-###` | TC-AUTH-001 | software-tester-design |
+| User Journey | `UJ-[FEATURE]-###` | UJ-AUTH-001 | ux-ui-design |
+| Wireframe | `WF-[FEATURE]-###` | WF-AUTH-001 | ux-ui-design |
+| UI Specification | `UI-[FEATURE]-###` | UI-AUTH-001 | ux-ui-design |
 | Developer Task | `DEV-[FEATURE]-###` | DEV-AUTH-001 | project-management |
 | Epic | `EPIC-[FEATURE]-###` | EPIC-AUTH-001 | project-management |
 | Architecture Decision | `ADR-###` | ADR-001 | software-architecture |
@@ -217,6 +227,210 @@ project-root/
 
 ### Cleanup
 - [Post-test cleanup if needed]
+```
+
+---
+
+### UJ - User Journey Template
+
+```markdown
+## UJ-[FEATURE]-### — [Journey Title]
+
+**Traces to:** US-[FEATURE]-###
+
+### Persona
+[Target user persona for this journey]
+
+### Goal
+[What the user is trying to accomplish]
+
+### Journey Stages
+
+| Stage | User Action | System Response | Emotion | Touchpoint |
+|-------|-------------|-----------------|---------|------------|
+| 1. Entry | [action] | [response] | [😊/😐/😟] | [screen/component] |
+| 2. [Stage] | [action] | [response] | [emotion] | [touchpoint] |
+| 3. Exit | [action] | [response] | [emotion] | [touchpoint] |
+
+### Pain Points
+- [Pain point 1]
+- [Pain point 2]
+
+### Opportunities
+- [UX improvement opportunity 1]
+- [UX improvement opportunity 2]
+```
+
+---
+
+### WF - Wireframe Template
+
+```markdown
+## WF-[FEATURE]-### — [Screen/Component Name]
+
+**Traces to:** UJ-[FEATURE]-###, US-[FEATURE]-###
+
+### Screen Purpose
+[What this screen/component accomplishes]
+
+### Layout Structure
+```
+┌─────────────────────────────────┐
+│           Header                │
+├─────────────────────────────────┤
+│                                 │
+│        Main Content Area        │
+│                                 │
+├─────────────────────────────────┤
+│           Footer                │
+└─────────────────────────────────┘
+```
+
+### Elements
+
+| Element | Type | Description | Interaction |
+|---------|------|-------------|-------------|
+| [element_name] | Button/Input/Card/etc. | [purpose] | [click/hover/etc.] |
+
+### States
+- Default: [description]
+- Loading: [description]
+- Error: [description]
+- Empty: [description]
+- Success: [description]
+
+### Responsive Behavior
+| Breakpoint | Layout Changes |
+|------------|----------------|
+| Desktop (>1024px) | [layout] |
+| Tablet (768-1024px) | [layout] |
+| Mobile (<768px) | [layout] |
+
+### Navigation
+- Entry points: [how users reach this screen]
+- Exit points: [where users can go from here]
+```
+
+---
+
+### UI - UI Specification Template
+
+```markdown
+## UI-[FEATURE]-### — [Component Name]
+
+**Traces to:** WF-[FEATURE]-###, FR-[FEATURE]-###
+
+### Component Type
+[Atom / Molecule / Organism / Template / Page]
+
+### Visual Specification
+
+#### Dimensions
+| Property | Value |
+|----------|-------|
+| Width | [value/auto/100%] |
+| Height | [value/auto] |
+| Padding | [top right bottom left] |
+| Margin | [top right bottom left] |
+| Border Radius | [value] |
+
+#### Typography
+| Element | Font | Size | Weight | Line Height | Color |
+|---------|------|------|--------|-------------|-------|
+| Title | [font] | [size] | [weight] | [height] | [token] |
+| Body | [font] | [size] | [weight] | [height] | [token] |
+
+#### Colors
+| State | Background | Text | Border |
+|-------|------------|------|--------|
+| Default | [token] | [token] | [token] |
+| Hover | [token] | [token] | [token] |
+| Active | [token] | [token] | [token] |
+| Disabled | [token] | [token] | [token] |
+
+### Interaction States
+| State | Visual Change | Trigger |
+|-------|--------------|---------|
+| Hover | [change] | Mouse over |
+| Focus | [change] | Keyboard focus |
+| Active | [change] | Click/tap |
+| Disabled | [change] | disabled prop |
+
+### Accessibility
+- ARIA Role: [role]
+- ARIA Label: [label pattern]
+- Keyboard Navigation: [tab/enter/escape behavior]
+- Focus Indicator: [description]
+- Color Contrast: [WCAG level AA/AAA]
+
+### Props/API (if component)
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| [prop] | [type] | [default] | [description] |
+
+### Usage Example
+```jsx
+<ComponentName prop="value" />
+```
+```
+
+---
+
+### Design System Template
+
+```markdown
+## Design System — [Project Name]
+
+### Design Tokens
+
+#### Colors
+| Token Name | Value | Usage |
+|------------|-------|-------|
+| --color-primary | #[hex] | Primary actions, links |
+| --color-secondary | #[hex] | Secondary actions |
+| --color-background | #[hex] | Page backgrounds |
+| --color-surface | #[hex] | Card/panel backgrounds |
+| --color-text-primary | #[hex] | Main text |
+| --color-text-secondary | #[hex] | Supporting text |
+| --color-error | #[hex] | Error states |
+| --color-success | #[hex] | Success states |
+| --color-warning | #[hex] | Warning states |
+
+#### Typography Scale
+| Token | Size | Line Height | Usage |
+|-------|------|-------------|-------|
+| --text-xs | 12px | 16px | Captions |
+| --text-sm | 14px | 20px | Small text |
+| --text-base | 16px | 24px | Body text |
+| --text-lg | 18px | 28px | Large body |
+| --text-xl | 20px | 28px | Subheadings |
+| --text-2xl | 24px | 32px | Headings |
+| --text-3xl | 30px | 36px | Large headings |
+
+#### Spacing Scale
+| Token | Value | Usage |
+|-------|-------|-------|
+| --space-1 | 4px | Tight spacing |
+| --space-2 | 8px | Default gap |
+| --space-3 | 12px | Element padding |
+| --space-4 | 16px | Section padding |
+| --space-6 | 24px | Large gaps |
+| --space-8 | 32px | Section margins |
+
+#### Breakpoints
+| Token | Value | Description |
+|-------|-------|-------------|
+| --breakpoint-sm | 640px | Mobile landscape |
+| --breakpoint-md | 768px | Tablet |
+| --breakpoint-lg | 1024px | Desktop |
+| --breakpoint-xl | 1280px | Large desktop |
+
+### Component Library Reference
+| Component | Status | UI-ID |
+|-----------|--------|-------|
+| Button | Ready | UI-[F]-001 |
+| Input | Ready | UI-[F]-002 |
+| Card | In Progress | UI-[F]-003 |
 ```
 
 ---
@@ -432,15 +646,18 @@ erDiagram
 │   - NFR-xxx     │
 └────────┬────────┘
          │ READS US/FR/NFR
-         ▼
-┌─────────────────┐
-│ software-tester │
-│   CREATES:      │
-│   - SC-xxx      │
-│   - TC-xxx      │
-│   - Test Data   │
-└────────┬────────┘
-         │ READS ALL ABOVE
+         ├──────────────────────────┐
+         ▼                          ▼
+┌─────────────────┐      ┌─────────────────┐
+│ software-tester │      │   ux-ui-design  │
+│   CREATES:      │      │   CREATES:      │
+│   - SC-xxx      │      │   - UJ-xxx      │
+│   - TC-xxx      │      │   - WF-xxx      │
+│   - Test Data   │      │   - UI-xxx      │
+└────────┬────────┘      │   - Design Sys  │
+         │               └────────┬────────┘
+         │ READS ALL ABOVE        │
+         ├────────────────────────┘
          ▼
 ┌─────────────────┐
 │ project-mgmt    │
@@ -503,6 +720,10 @@ Use the templates and naming conventions specified there.
 | What to test | `docs/test-design/test-scenarios.md` | SC Template |
 | How to test | `docs/test-design/test-cases.md` | TC Template |
 | Test inputs | `docs/test-design/test-data.md` | Test Data Template |
+| User journeys | `docs/ux-design/user-journeys.md` | UJ Template |
+| Wireframes | `docs/ux-design/wireframes.md` | WF Template |
+| UI components | `docs/ux-design/ui-specifications.md` | UI Template |
+| Design tokens | `docs/ux-design/design-system.md` | Design System Template |
 | Task breakdown | `docs/project/backlog.md` | DEV Template |
 | Current sprint | `docs/project/iterations/iteration-N.md` | Iteration Card |
 | API specs | `docs/architecture/api-contracts.md` | API Template |

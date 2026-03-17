@@ -18,9 +18,6 @@ description: >
   implementation planning.
   Always run AFTER business-analysis and software-tester-design — architecture serves the scenario,
   not the other way around. Output feeds directly into the ai-orchestrator for TDD implementation.
-metadata:
-  author: Thammasok
-  version: 1.0.0
 ---
 
 > **Artifact Reference:** All artifacts produced by this skill MUST follow the templates and storage locations defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Store outputs in `docs/architecture/`.

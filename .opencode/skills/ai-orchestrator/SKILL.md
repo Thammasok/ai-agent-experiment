@@ -18,9 +18,6 @@ description: >
   Always run AFTER software-architecture — architecture defines what to build, orchestrator
   builds it. Never skip the test-first step. Never approve your own work — signal ready for
   human review.
-metadata:
-  author: Thammasok
-  version: 1.0.0
 ---
 
 > **Artifact Reference:** All artifacts consumed and produced by this skill MUST follow the templates and storage locations defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Read from `docs/` directories; write to `src/` and `tests/`.

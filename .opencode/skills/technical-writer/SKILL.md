@@ -13,9 +13,6 @@ description: >
   "write help content", or when a feature has passed UAT and needs user-facing documentation.
   Always run AFTER UAT passes — only document features that work and are approved. Never document
   unfinished or untested features. Output is for end users, not developers.
-metadata:
-  author: Thammasok
-  version: 1.0.0
 ---
 
 > **Artifact Reference:** All artifacts produced by this skill MUST follow the templates and storage locations defined in [`.opencode/artifacts/ARTIFACTS.md`](../../artifacts/ARTIFACTS.md). Store outputs in `docs/user-guide/`.

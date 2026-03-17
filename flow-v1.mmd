@@ -1,44 +1,51 @@
 flowchart LR
     subgraph PD["Product Discovery"]
-        BA["Requirement Gathering\n(BA)"]
-        SWT["Test Design\n(SWT)"]
-        UX["UX/UI Design"]
+        BA["Requirement Gathering (BA)"]
+
+        subgraph PARALLEL["Design Phase (parallel)"]
+            SWT["Test Design (SWT)"]
+            UX["UX/UI Design"]
+        end
+
+        BA --> SWT
+        BA --> UX
     end
 
-    PM["Breakdown Scenarios\ninto Iterations\n(PM)"]
+    PM["Breakdown Scenarios into Iterations (PM)"]
 
     subgraph ITERATION["Iteration — one scenario at a time"]
-        ORC["AI Orchestrator\n(receives SC-xxx + TC-xxx)"]
+        ORC["AI Orchestrator (receives SC-xxx + TC-xxx)"]
 
-        subgraph ARCH["Just-enough Architecture\n(per scenario)"]
+        subgraph ARCH["Just-enough Architecture (per scenario)"]
             APIC["API Contract"]
             DBS["DB Schema"]
             OPENAPI["OpenAPI Spec"]
         end
 
         subgraph DEVLOOP["Development Loop"]
-            TDD["Write Failing Test\n(TDD Red)"]
-            IMPL["Implement\n(TDD Green)"]
+            TDD["Write Failing Test (TDD Red)"]
+            IMPL["Implement (TDD Green)"]
             REFAC["Refactor"]
             INT["Integrate"]
-            TESTALL["Test All\n(automated suite)"]
-            TECHDOC["Technical Docs\n(README, setup)"]
+            TESTALL["Test All (automated suite)"]
+            TECHDOC["Technical Docs (README, setup)"]
         end
     end
 
-    UAT["UAT\n(PM + Software Tester)"]
+    UAT["UAT (PM + Software Tester)"]
     HUMAN["Human Review"]
     PASS{{"is Pass?"}}
     BUG["Fix Bug"]
-    REQ["Revisit Requirement\n(BA / PM)"]
+    REQ["Revisit Requirement (BA / PM)"]
 
     subgraph DOCS["Documentation"]
-        USERDOC["User Documentation\n(technical-writer)"]
+        USERDOC["User Documentation (technical-writer)"]
     end
 
-    RETRO["Iteration Retrospect\n(PM adapts backlog +\ngenerates release notes)"]
+    RETRO["Iteration Retrospect (PM adapts backlog + generates release notes)"]
 
-    PD --> PM
+    SWT --> PM
+    UX --> PM
     PM --> ORC
     ORC --> ARCH
     APIC --> TDD
@@ -48,10 +55,10 @@ flowchart LR
     UAT --> HUMAN
     HUMAN --> PASS
 
-    PASS -- "Yes\nnext scenario" --> ORC
+    PASS -- "Yes next scenario" --> ORC
     PASS -- "No: bug" --> BUG --> DEVLOOP
-    PASS -- "No: wrong\nrequirement" --> REQ --> PM
+    PASS -- "No: wrong requirement" --> REQ --> PM
 
-    ORC -- "iteration done\n(all scenarios pass)" --> USERDOC
+    ORC -- "iteration done (all scenarios pass)" --> USERDOC
     USERDOC --> RETRO
     RETRO -- "next iteration" --> PM
