@@ -22,18 +22,22 @@ The system implements an agentic software development workflow based on:
 
 ### Skill System
 
-Skills are defined in `.opencode/skills/[skill-name]/SKILL.md`. Each skill has a YAML frontmatter with `name` and `description`, followed by step-by-step guidance.
+Skills are defined in `.claude/skills/[skill-name]/SKILL.md` (primary) and mirrored in `.opencode/skills/[skill-name]/SKILL.md`. Each skill has a YAML frontmatter with `name` and `description`, followed by step-by-step guidance.
 
 | Skill | Purpose |
 |-------|---------|
 | `business-analysis` | Requirements elicitation, user story mapping, FR/NFR specs |
 | `software-tester-design` | Test scenario and test case design (SC-xxx, TC-xxx) |
+| `software-tester` | Full testing assistance — design, automation, strategy, all levels |
+| `software-tester-automation` | Automated test code implementation |
 | `project-management` | Iteration planning, task breakdown, release notes |
 | `software-architecture` | API contracts, DB schemas, OpenAPI specs |
 | `ai-orchestrator` | TDD development loop execution |
-| `technical-writer` | User documentation after UAT passes |
-| `software-tester-automation` | Automated test code implementation |
+| `agent-team-development` | Parallel implementation via tmux split-pane teammates |
 | `software-engineer` | General coding, debugging, code review |
+| `mobile-developer-flutter` | Flutter mobile development — architecture, UI, state, testing |
+| `ux-ui-designer` | UX/UI design, design systems, accessibility, component specs |
+| `technical-writer` | User documentation after UAT passes |
 
 ### Workflow Stages
 
@@ -59,8 +63,10 @@ All artifact templates, storage locations, and naming conventions are defined in
 
 - `idea.md` — Workflow diagram and design decisions
 - `AGENTS.md` — Code style guidelines for projects using these skills
-- `.opencode/skills/*/SKILL.md` — Individual skill definitions
-- `.opencode/artifacts/ARTIFACTS.md` — Centralized artifact storage, naming conventions, and templates
+- `.claude/skills/*/SKILL.md` — Individual skill definitions (primary location)
+- `.opencode/skills/*/SKILL.md` — Individual skill definitions (mirror)
+- `.claude/artifacts/ARTIFACTS.md` — Centralized artifact storage, naming conventions, and templates
+- `.opencode/artifacts/ARTIFACTS.md` — Mirror of artifact definitions
 
 ## Code Style (for projects using these skills)
 
